@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using BandApi.DataTransferObjects;
-using BandApi.Entities;
 using BandApi.Services.IRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +26,7 @@ namespace BandApi.Controllers
         {
             var bands = _bandAlbumRepository.GetBands();
 
-            var bandsDto = _mapper.Map<IEnumerable<Band>, IEnumerable<BandDto>>(bands);
+            var bandsDto = _mapper.Map<IEnumerable<BandDto>>(bands);
 
             return StatusCode(StatusCodes.Status200OK, bandsDto);
         }
