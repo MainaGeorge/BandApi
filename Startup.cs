@@ -1,3 +1,5 @@
+using System;
+using AutoMapper;
 using BandApi.DataContexts;
 using BandApi.Services.IRepository;
 using BandApi.Services.Repository;
@@ -27,7 +29,7 @@ namespace BandApi
                 setupAction.ReturnHttpNotAcceptable = true;
             })
                 .AddXmlDataContractSerializerFormatters();
-
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<IBandAlbumRepository, BandAlbumRepository>();
             services.AddDbContext<AlbumBandDataContext>(opt =>
             {

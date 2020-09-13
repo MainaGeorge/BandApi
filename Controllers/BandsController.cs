@@ -1,7 +1,11 @@
-﻿using BandApi.Services.IRepository;
+﻿using AutoMapper;
+using BandApi.DataTransferObjects;
+using BandApi.Entities;
+using BandApi.Services.IRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 
 namespace BandApi.Controllers
 {
@@ -10,10 +14,12 @@ namespace BandApi.Controllers
     public class BandsController : ControllerBase
     {
         private readonly IBandAlbumRepository _bandAlbumRepository;
+        private readonly IMapper _mapper;
 
-        public BandsController(IBandAlbumRepository bandAlbumRepository)
+        public BandsController(IBandAlbumRepository bandAlbumRepository, IMapper mapper)
         {
             _bandAlbumRepository = bandAlbumRepository ?? throw new ArgumentNullException(nameof(bandAlbumRepository));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]
@@ -21,7 +27,9 @@ namespace BandApi.Controllers
         {
             var bands = _bandAlbumRepository.GetBands();
 
-            return StatusCode(StatusCodes.Status200OK, bands);
+            var bandsDto = _mapper.Map<IEnumerable<Band>, IEnumerable<BandDto>>(bands);
+
+            return StatusCode(StatusCodes.Status200OK, bandsDto);
         }
 
         [HttpGet("{bandId}")]
@@ -32,7 +40,8 @@ namespace BandApi.Controllers
             if (band == null)
                 return StatusCode(StatusCodes.Status404NotFound);
 
-            return StatusCode(StatusCodes.Status200OK, band);
+            var bandDto = _mapper.Map<BandDto>(band);
+            return StatusCode(StatusCodes.Status200OK, bandDto);
         }
     }
 }
