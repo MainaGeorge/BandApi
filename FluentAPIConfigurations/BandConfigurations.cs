@@ -10,12 +10,9 @@ namespace BandApi.FluentAPIConfigurations
         {
             builder.HasKey(p => p.Id);
             builder.Property(p => p.Name)
-                .IsRequired()
-                .HasMaxLength(50)
-                .HasColumnType("varchar");
-            builder.Property(p => p.MainGenre)
-                .HasMaxLength(50)
-                .HasColumnType("varchar");
+                .IsRequired();
+
+
         }
     }
 }

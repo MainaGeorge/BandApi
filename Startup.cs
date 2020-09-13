@@ -1,4 +1,6 @@
 using BandApi.DataContexts;
+using BandApi.Services.IRepository;
+using BandApi.Services.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +23,7 @@ namespace BandApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddScoped<IBandAlbumRepository, BandAlbumRepository>();
             services.AddDbContext<AlbumBandDataContext>(opt =>
             {
                 opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));

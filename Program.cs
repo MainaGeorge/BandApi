@@ -1,19 +1,35 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
+using BandApi.DataContexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace BandApi
 {
-    public class Program
+    internal class Program
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+
+            using var scope = host.Services.CreateScope();
+            try
+            {
+                var context = scope.ServiceProvider.GetService<AlbumBandDataContext>();
+                context.Database.EnsureDeleted();
+                context.Database.Migrate();
+            }
+            catch (Exception e)
+            {
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+                logger.LogError(e, "Something went wrong while performing the migrations");
+            }
+
+            host.Run();
+
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

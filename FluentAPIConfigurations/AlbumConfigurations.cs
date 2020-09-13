@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BandApi.FluentAPIConfigurations
 {
-    public class AlbumConfigurations: IEntityTypeConfiguration<Album>
+    public class AlbumConfigurations : IEntityTypeConfiguration<Album>
     {
         public void Configure(EntityTypeBuilder<Album> builder)
         {
@@ -12,11 +12,9 @@ namespace BandApi.FluentAPIConfigurations
 
             builder.HasKey(p => p.Id);
             builder.Property(p => p.Title)
-                .IsRequired()
-                .HasColumnType("varchar")
-                .HasMaxLength(50);
-            builder.Property(p => p.Description)
-                .HasMaxLength(300);
+                .IsRequired();
+
+
 
             builder.HasOne(p => p.Band)
                 .WithMany(p => p.Albums)
