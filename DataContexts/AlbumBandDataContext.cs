@@ -1,13 +1,13 @@
-﻿using System;
-using BandApi.Entities;
+﻿using BandApi.Entities;
 using BandApi.FluentAPIConfigurations;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace BandApi.DataContexts
 {
-    public class AlbumBandDataContext: DbContext
+    public class AlbumBandDataContext : DbContext
     {
-        public AlbumBandDataContext(DbContextOptions<AlbumBandDataContext> opt):base(opt)
+        public AlbumBandDataContext(DbContextOptions<AlbumBandDataContext> opt) : base(opt)
         {
         }
 
@@ -91,8 +91,7 @@ namespace BandApi.DataContexts
 
             base.OnModelCreating(modelBuilder);
         }
-
         public DbSet<Album> Albums { get; set; }
-        public DbSet<Band> Bands { get; set; }  
+        public DbSet<Band> Bands { get; set; }
     }
 }
