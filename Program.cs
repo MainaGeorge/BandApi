@@ -1,10 +1,10 @@
+using BandApi.DataContexts;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using BandApi.DataContexts;
-using Microsoft.EntityFrameworkCore;
 
 namespace BandApi
 {
@@ -14,6 +14,22 @@ namespace BandApi
         {
             var host = CreateHostBuilder(args).Build();
 
+            EnsureDatabaseRecreation(host);
+
+            host.Run();
+
+        }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
+        private static void EnsureDatabaseRecreation(IHost host)
+        {
             using var scope = host.Services.CreateScope();
             try
             {
@@ -28,15 +44,8 @@ namespace BandApi
                 logger.LogError(e, "Something went wrong while performing the migrations");
             }
 
-            host.Run();
 
         }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
     }
+
 }
