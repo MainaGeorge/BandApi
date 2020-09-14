@@ -47,7 +47,7 @@ namespace BandApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateBand(BandCreationDto creationDto)
+        public ActionResult<BandDto> CreateBand(BandCreationDto creationDto)
         {
             if (!ModelState.IsValid)
                 return StatusCode(StatusCodes.Status400BadRequest, ModelState);
