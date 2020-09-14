@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BandApi.DataTransferObjects;
+using BandApi.QueryModifiers;
 using BandApi.Services.IRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,9 +23,10 @@ namespace BandApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetBands()
+        [HttpHead]
+        public IActionResult GetBands([FromQuery] QueryParameters queryParameters)
         {
-            var bands = _bandAlbumRepository.GetBands();
+            var bands = _bandAlbumRepository.GetBands(queryParameters);
 
             var bandsDto = _mapper.Map<IEnumerable<BandDto>>(bands);
 

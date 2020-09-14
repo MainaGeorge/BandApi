@@ -1,9 +1,10 @@
-﻿using System;
+﻿using BandApi.DataContexts;
+using BandApi.Entities;
+using BandApi.QueryModifiers;
+using BandApi.Services.IRepository;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using BandApi.DataContexts;
-using BandApi.Entities;
-using BandApi.Services.IRepository;
 
 namespace BandApi.Services.Repository
 {
@@ -18,7 +19,7 @@ namespace BandApi.Services.Repository
 
         public IEnumerable<Album> GetAlbumsForABand(Guid bandId)
         {
-            if(bandId == Guid.Empty)
+            if (bandId == Guid.Empty)
                 throw new ArgumentNullException(nameof(bandId));
 
             return _context.Albums.Where(a => a.BandId == bandId).ToList();
@@ -26,10 +27,10 @@ namespace BandApi.Services.Repository
 
         public Album GetAlbum(Guid bandId, Guid albumId)
         {
-            if(bandId == Guid.Empty)
+            if (bandId == Guid.Empty)
                 throw new ArgumentNullException(nameof(bandId));
 
-            if(albumId == Guid.Empty)
+            if (albumId == Guid.Empty)
                 throw new ArgumentNullException(nameof(albumId));
 
             return _context.Albums.FirstOrDefault(a => a.Id == albumId && a.BandId == bandId);
@@ -40,7 +41,7 @@ namespace BandApi.Services.Repository
             if (bandId == Guid.Empty)
                 throw new ArgumentNullException(nameof(bandId));
 
-            if(album == null)
+            if (album == null)
                 throw new ArgumentNullException(nameof(album));
 
             album.BandId = bandId;
@@ -49,20 +50,38 @@ namespace BandApi.Services.Repository
 
         public void DeleteAlbum(Album album)
         {
-            if(album == null)
+            if (album == null)
                 throw new ArgumentNullException(nameof(album));
 
             _context.Albums.Remove(album);
         }
 
-        public IEnumerable<Band> GetBands()
+        public IEnumerable<Band> GetBands(QueryParameters queryParameters)
         {
-            return _context.Bands.OrderBy(b => b.Name).ToList();
+            if (queryParameters == null)
+            {
+                throw new ArgumentNullException(nameof(queryParameters));
+            }
+
+            if (string.IsNullOrWhiteSpace(queryParameters.BandName) && string.IsNullOrWhiteSpace(queryParameters.MainGenre))
+                return _context.Bands.OrderBy(b => b.Name).ToList();
+
+            var query = _context.Bands as IQueryable<Band>;
+
+            if (!string.IsNullOrWhiteSpace(queryParameters.BandName))
+                query = query
+                    .Where(b => b.Name.ToLower().Contains(queryParameters.BandName.Trim().ToLower()));
+
+            if (!string.IsNullOrWhiteSpace(queryParameters.MainGenre))
+                query = query
+                    .Where(b => b.MainGenre == queryParameters.MainGenre.Trim());
+
+            return query.ToList();
         }
 
         public Band GetBand(Guid bandId)
         {
-            if(bandId == Guid.Empty)
+            if (bandId == Guid.Empty)
                 throw new ArgumentNullException(nameof(bandId));
 
             return _context.Bands.FirstOrDefault(b => b.Id == bandId);
@@ -70,7 +89,7 @@ namespace BandApi.Services.Repository
 
         public IEnumerable<Band> GetBands(IEnumerable<Guid> bandIds)
         {
-            if(bandIds == null)
+            if (bandIds == null)
                 throw new ArgumentNullException(nameof(bandIds));
 
             return _context.Bands.Where(b => bandIds.Contains(b.Id)).ToList();
@@ -78,7 +97,7 @@ namespace BandApi.Services.Repository
 
         public void AddBand(Band band)
         {
-            if(band == null)
+            if (band == null)
                 throw new ArgumentNullException(nameof(band));
 
             _context.Bands.Add(band);
@@ -86,7 +105,7 @@ namespace BandApi.Services.Repository
 
         public void DeleteBand(Band band)
         {
-            if(band == null)
+            if (band == null)
                 throw new ArgumentNullException(nameof(band));
 
             _context.Bands.Remove(band);
@@ -94,7 +113,7 @@ namespace BandApi.Services.Repository
 
         public bool BandExists(Guid bandId)
         {
-            if(bandId == Guid.Empty)
+            if (bandId == Guid.Empty)
                 throw new ArgumentNullException(nameof(bandId));
 
             return _context.Bands.Any(b => b.Id == bandId);
@@ -102,7 +121,7 @@ namespace BandApi.Services.Repository
 
         public bool AlbumExists(Guid albumId)
         {
-            if(albumId == Guid.Empty)
+            if (albumId == Guid.Empty)
                 throw new ArgumentNullException(nameof(albumId));
 
             return _context.Albums.Any(a => a.Id == albumId);
