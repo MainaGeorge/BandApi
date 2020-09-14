@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BandApi.DataTransferObjects;
+using BandApi.Entities;
 using BandApi.QueryModifiers;
 using BandApi.Services.IRepository;
 using Microsoft.AspNetCore.Http;
@@ -33,7 +34,7 @@ namespace BandApi.Controllers
             return StatusCode(StatusCodes.Status200OK, bandsDto);
         }
 
-        [HttpGet("{bandId}")]
+        [HttpGet("{bandId}", Name = "GetBand")]
         public IActionResult GetBand(Guid bandId)
         {
             var band = _bandAlbumRepository.GetBand(bandId);
@@ -43,6 +44,24 @@ namespace BandApi.Controllers
 
             var bandDto = _mapper.Map<BandDto>(band);
             return StatusCode(StatusCodes.Status200OK, bandDto);
+        }
+
+        [HttpPost]
+        public ActionResult CreateBand(BandCreationDto creationDto)
+        {
+            if (!ModelState.IsValid)
+                return StatusCode(StatusCodes.Status400BadRequest, ModelState);
+
+            creationDto.Founded ??= DateTime.Now;
+
+            var band = _mapper.Map<Band>(creationDto);
+
+            _bandAlbumRepository.AddBand(band);
+            _bandAlbumRepository.Save();
+
+            var bandDto = _mapper.Map<BandDto>(band);
+            return CreatedAtRoute("GetBand", new { bandId = bandDto.Id }, bandDto);
+
         }
     }
 }

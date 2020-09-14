@@ -14,6 +14,8 @@ namespace BandApi.Profiles
                 {
                     opt.MapFrom(src => $"Founded in {src.Founded:yyyy} ({src.Founded.FoundedYearsAgo()} years ago)");
                 });
+
+            CreateMap<BandCreationDto, Band>();
         }
     }
 }
