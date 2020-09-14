@@ -9,6 +9,6 @@ namespace BandApi.Entities
         public string Name { get; set; }
         public DateTime Founded { get; set; }
         public string MainGenre { get; set; }
-        public ICollection<Album> Albums { get; set; }
+        public ICollection<Album> Albums { get; set; } = new List<Album>();
     }
 }

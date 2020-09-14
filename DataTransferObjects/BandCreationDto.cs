@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BandApi.DataTransferObjects
@@ -10,5 +11,7 @@ namespace BandApi.DataTransferObjects
         public DateTime? Founded { get; set; }
         [Required]
         public string MainGenre { get; set; }
+        public ICollection<AlbumCreationDto> Albums { get; set; } = new List<AlbumCreationDto>();
+
     }
 }
