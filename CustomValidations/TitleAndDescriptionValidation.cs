@@ -8,7 +8,7 @@ namespace BandApi.CustomValidations
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var context = (AlbumCreationDto)validationContext.ObjectInstance;
+            var context = (AlbumModificationsDto)validationContext.ObjectInstance;
 
             return string.Equals(context.Title.Trim(), context.Description.Trim(), StringComparison.CurrentCultureIgnoreCase)
                 ? new ValidationResult($"{nameof(context.Description)} and {nameof(context.Title)} can not be the same")

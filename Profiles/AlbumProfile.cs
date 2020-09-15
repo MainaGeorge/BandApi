@@ -12,6 +12,8 @@ namespace BandApi.Profiles
                 .ReverseMap();
 
             CreateMap<AlbumCreationDto, Album>();
+
+            CreateMap<AlbumForUpdatingDto, Album>();
         }
     }
 }

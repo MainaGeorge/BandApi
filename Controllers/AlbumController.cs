@@ -52,10 +52,10 @@ namespace BandApi.Controllers
         public ActionResult<AlbumDto> PostAlbum(Guid bandId, AlbumCreationDto creationDto)
         {
             if (!_bandAlbumRepository.BandExists(bandId))
-                return StatusCode(StatusCodes.Status400BadRequest, new { error = "Band does not exist " });
+                return StatusCode(StatusCodes.Status404NotFound, new { error = "Band does not exist " });
 
             if (!ModelState.IsValid)
-                return StatusCode(StatusCodes.Status400BadRequest, ModelState);
+                return StatusCode(StatusCodes.Status404NotFound, ModelState);
 
             var album = _mapper.Map<Album>(creationDto);
             album.BandId = bandId;
@@ -65,6 +65,24 @@ namespace BandApi.Controllers
 
             var albumDto = _mapper.Map<AlbumDto>(album);
             return CreatedAtRoute("GetAlbumForBand", new { bandId, albumId = albumDto.BandId }, albumDto);
+        }
+
+        [HttpPut("{albumId}")]
+        public ActionResult UpdateAlbum(Guid albumId, Guid bandId, AlbumForUpdatingDto albumToUpdateDto)
+        {
+            if (!_bandAlbumRepository.BandExists(bandId))
+                return StatusCode(StatusCodes.Status404NotFound, new { error = "band doesn't exist" });
+
+            var albumFromRepo = _bandAlbumRepository.GetAlbum(bandId, albumId);
+
+            if (albumFromRepo == null)
+                return StatusCode(StatusCodes.Status404NotFound, new { error = "album does not exist" });
+
+            _mapper.Map(albumToUpdateDto, albumFromRepo);
+
+            _bandAlbumRepository.Save();
+
+            return StatusCode(StatusCodes.Status204NoContent);
         }
     }
 }

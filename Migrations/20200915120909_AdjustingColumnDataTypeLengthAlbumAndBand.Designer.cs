@@ -4,14 +4,16 @@ using BandApi.DataContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BandApi.Migrations
 {
     [DbContext(typeof(AlbumBandDataContext))]
-    partial class AlbumBandDataContextModelSnapshot : ModelSnapshot
+    [Migration("20200915120909_AdjustingColumnDataTypeLengthAlbumAndBand")]
+    partial class AdjustingColumnDataTypeLengthAlbumAndBand
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
