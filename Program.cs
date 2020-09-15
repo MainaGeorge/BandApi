@@ -14,7 +14,7 @@ namespace BandApi
         {
             var host = CreateHostBuilder(args).Build();
 
-            EnsureDatabaseRecreation(host);
+            // EnsureDatabaseRecreation(host);
 
             host.Run();
 
