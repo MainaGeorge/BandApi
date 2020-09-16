@@ -23,7 +23,7 @@ namespace BandApi.Controllers
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        [HttpGet]
+        [HttpGet(Name = "GetBands")]
         [HttpHead]
         public IActionResult GetBands([FromQuery] QueryParameters queryParameters)
         {

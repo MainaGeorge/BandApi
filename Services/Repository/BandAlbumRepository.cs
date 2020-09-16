@@ -1,5 +1,6 @@
 ﻿using BandApi.DataContexts;
 using BandApi.Entities;
+using BandApi.Helpers;
 using BandApi.QueryModifiers;
 using BandApi.Services.IRepository;
 using System;
@@ -56,15 +57,12 @@ namespace BandApi.Services.Repository
             _context.Albums.Remove(album);
         }
 
-        public IEnumerable<Band> GetBands(QueryParameters queryParameters)
+        public PagedList<Band> GetBands(QueryParameters queryParameters)
         {
             if (queryParameters == null)
             {
                 throw new ArgumentNullException(nameof(queryParameters));
             }
-
-            if (string.IsNullOrWhiteSpace(queryParameters.BandName) && string.IsNullOrWhiteSpace(queryParameters.MainGenre))
-                return _context.Bands.OrderBy(b => b.Name).ToList();
 
             var query = _context.Bands as IQueryable<Band>;
 
@@ -76,7 +74,7 @@ namespace BandApi.Services.Repository
                 query = query
                     .Where(b => b.MainGenre == queryParameters.MainGenre.Trim());
 
-            return query.ToList();
+            return PagedList<Band>.InstantiatePagedList(query, queryParameters.PageNumber, queryParameters.PageSize);
         }
 
         public Band GetBand(Guid bandId)
