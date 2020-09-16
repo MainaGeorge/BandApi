@@ -19,7 +19,7 @@ namespace BandApi.Helpers
             PageSize = pageSize;
             CurrentPage = currentPage;
             TotalItems = totalItems;
-            TotalPages = (int)Math.Ceiling(Convert.ToDouble(TotalPages) / PageSize);
+            TotalPages = (int)Math.Ceiling(Convert.ToDouble(TotalItems) / PageSize);
             AddRange(items);
         }
 

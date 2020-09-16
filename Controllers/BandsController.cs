@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using BandApi.DataTransferObjects;
 using BandApi.Entities;
+using BandApi.Helpers;
 using BandApi.QueryModifiers;
 using BandApi.Services.IRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -28,6 +30,21 @@ namespace BandApi.Controllers
         public IActionResult GetBands([FromQuery] QueryParameters queryParameters)
         {
             var bands = _bandAlbumRepository.GetBands(queryParameters);
+
+            var nextPageLink = bands.HasNext ? CreateUri(UriType.NextPage, queryParameters) : null;
+            var previousPageLink = bands.HasPrevious ? CreateUri(UriType.PreviousPage, queryParameters) : null;
+
+            var metaData = new
+            {
+                bands.TotalItems,
+                bands.PageSize,
+                bands.CurrentPage,
+                bands.TotalPages,
+                previousPageLink,
+                nextPageLink
+            };
+
+            Response.Headers.Add("Pagination", JsonConvert.SerializeObject(metaData));
 
             var bandsDto = _mapper.Map<IEnumerable<BandDto>>(bands);
 
@@ -76,6 +93,37 @@ namespace BandApi.Controllers
             _bandAlbumRepository.Save();
 
             return StatusCode(StatusCodes.Status204NoContent);
+        }
+
+        private string CreateUri(UriType uriType, QueryParameters parameters)
+        {
+            return uriType switch
+            {
+                UriType.PreviousPage => Url.Link("GetBands",
+                    new
+                    {
+                        PageNumber = parameters.PageNumber - 1,
+                        parameters.PageSize,
+                        parameters.BandName,
+                        parameters.MainGenre
+                    }),
+                UriType.NextPage => Url.Link("GetBands",
+                    new
+                    {
+                        PageNumber = parameters.PageNumber + 1,
+                        parameters.PageSize,
+                        parameters.BandName,
+                        parameters.MainGenre
+                    }),
+                _ => Url.Link("GetBands",
+                    new
+                    {
+                        parameters.PageNumber,
+                        parameters.PageSize,
+                        parameters.BandName,
+                        parameters.MainGenre
+                    })
+            };
         }
     }
 }
