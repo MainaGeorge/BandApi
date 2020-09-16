@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using BandApi.DataTransferObjects;
 using BandApi.Entities;
+using BandApi.Helpers;
 using BandApi.Services.IRepository;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BandApi.Controllers
 {
@@ -36,7 +37,32 @@ namespace BandApi.Controllers
 
             var bandsToReturn = _mapper.Map<IEnumerable<BandDto>>(bandsToCreate);
 
-            return StatusCode(StatusCodes.Status200OK, bandsToReturn);
+            var ids = string.Join(",", bandsToReturn.Select(x => x.Id));
+
+            return CreatedAtRoute("GetCollectionOfBands", new { ids }, bandsToReturn);
+        }
+
+        [HttpGet("({ids})", Name = "GetCollectionOfBands")]
+        public ActionResult<IEnumerable<BandDto>> GetCollectionOfBands(
+            [FromQuery] [ModelBinder(typeof(CustomModelBinder))]
+            IEnumerable<Guid> ids)
+        {
+            if (ids == null)
+            {
+                ModelState.AddModelError("invalid ids", "ids can not be empty");
+                return BadRequest(ModelState);
+            }
+
+            var bandIds = ids.ToArray();
+
+            var bands = _bandAlbumRepository.GetBands(bandIds);
+
+            if (bands.Count() != bandIds.Count())
+                return NotFound();
+
+            var bandsDto = _mapper.Map<IEnumerable<BandDto>>(bands);
+
+            return Ok(bandsDto);
         }
     }
 }
