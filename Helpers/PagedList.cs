@@ -26,7 +26,7 @@ namespace BandApi.Helpers
         public static PagedList<T> InstantiatePagedList(IQueryable<T> source, int pageNumber, int pageSize)
         {
             var totalItems = source.Count();
-            var items = source.Skip((pageSize * pageNumber - 1))
+            var items = source.Skip(pageSize * (pageNumber - 1))
                 .Take(pageSize)
                 .ToList();
 

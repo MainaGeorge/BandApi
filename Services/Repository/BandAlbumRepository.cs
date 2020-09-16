@@ -66,13 +66,23 @@ namespace BandApi.Services.Repository
 
             var query = _context.Bands as IQueryable<Band>;
 
-            if (!string.IsNullOrWhiteSpace(queryParameters.BandName))
-                query = query
-                    .Where(b => b.Name.ToLower().Contains(queryParameters.BandName.Trim().ToLower()));
-
             if (!string.IsNullOrWhiteSpace(queryParameters.MainGenre))
+            {
+                var mainGenre = queryParameters.MainGenre.Trim();
                 query = query
-                    .Where(b => b.MainGenre == queryParameters.MainGenre.Trim());
+                    .Where(b => b.MainGenre == mainGenre);
+            }
+
+            // ReSharper disable once InvertIf
+            if (!string.IsNullOrWhiteSpace(queryParameters.BandName))
+            {
+                var bandName = queryParameters.BandName.ToLower().Trim();
+                query = query
+                    .Where(b => b.Name.ToLower().Contains(bandName));
+            }
+
+
+
 
             return PagedList<Band>.InstantiatePagedList(query, queryParameters.PageNumber, queryParameters.PageSize);
         }
