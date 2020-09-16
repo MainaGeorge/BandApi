@@ -63,5 +63,19 @@ namespace BandApi.Controllers
             return CreatedAtRoute("GetBand", new { bandId = bandDto.Id }, bandDto);
 
         }
+
+        [HttpDelete("{bandId}")]
+        public IActionResult DeleteBand(Guid bandId)
+        {
+            var bandToDelete = _bandAlbumRepository.GetBand(bandId);
+
+            if (bandToDelete == null)
+                return StatusCode(StatusCodes.Status400BadRequest);
+
+            _bandAlbumRepository.DeleteBand(bandToDelete);
+            _bandAlbumRepository.Save();
+
+            return StatusCode(StatusCodes.Status204NoContent);
+        }
     }
 }

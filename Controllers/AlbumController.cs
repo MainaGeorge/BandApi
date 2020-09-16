@@ -55,7 +55,7 @@ namespace BandApi.Controllers
                 return StatusCode(StatusCodes.Status404NotFound, new { error = "Band does not exist " });
 
             if (!ModelState.IsValid)
-                return StatusCode(StatusCodes.Status404NotFound, ModelState);
+                return StatusCode(StatusCodes.Status400BadRequest, ModelState);
 
             var album = _mapper.Map<Album>(creationDto);
             album.BandId = bandId;
@@ -80,6 +80,22 @@ namespace BandApi.Controllers
 
             _mapper.Map(albumToUpdateDto, albumFromRepo);
 
+            _bandAlbumRepository.Save();
+
+            return StatusCode(StatusCodes.Status204NoContent);
+        }
+
+        [HttpDelete("{albumId}")]
+        public IActionResult DeleteAlbum(Guid albumId, Guid bandId)
+        {
+            if (!_bandAlbumRepository.BandExists(bandId))
+                return StatusCode(StatusCodes.Status404NotFound);
+            var albumToDelete = _bandAlbumRepository.GetAlbum(bandId, albumId);
+
+            if (albumToDelete == null)
+                return StatusCode(StatusCodes.Status404NotFound);
+
+            _bandAlbumRepository.DeleteAlbum(albumToDelete);
             _bandAlbumRepository.Save();
 
             return StatusCode(StatusCodes.Status204NoContent);
